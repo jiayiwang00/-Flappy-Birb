@@ -192,8 +192,6 @@ const createSvgElement = (
 const render = (): ((s: State) => void) => {
     // Canvas elements
     const gameOver = document.querySelector("#gameOver") as SVGElement;
-    const container = document.querySelector("#main") as HTMLElement;
-
     // Text fields
     const livesText = document.querySelector("#livesText") as HTMLElement;
     const scoreText = document.querySelector("#scoreText") as HTMLElement;
@@ -205,6 +203,10 @@ const render = (): ((s: State) => void) => {
         "viewBox",
         `0 0 ${Viewport.CANVAS_WIDTH} ${Viewport.CANVAS_HEIGHT}`,
     );
+
+    // Container group for all pipes. It sits behind both birds.
+    const pipesGroup = createSvgElement(svg.namespaceURI, "g", {});
+    svg.appendChild(pipesGroup);
 
     // The most recent run is rendered in its own non-interactive layer.
     const ghostsGroup = createSvgElement(svg.namespaceURI, "g", {
@@ -219,12 +221,9 @@ const render = (): ((s: State) => void) => {
         y: `${Viewport.CANVAS_HEIGHT / 2 - Birb.HEIGHT / 2}`,
         width: `${Birb.WIDTH}`,
         height: `${Birb.HEIGHT}`,
+        class: "player-bird",
     });
     svg.appendChild(birdImg);
-
-    // Container group for all pipes
-    const pipesGroup = createSvgElement(svg.namespaceURI, "g", {}); // group to hold pipe rects
-    svg.appendChild(pipesGroup);
 
     const youWin = createSvgElement(svg.namespaceURI, "text", {
         id: "youWin",
@@ -278,9 +277,9 @@ const render = (): ((s: State) => void) => {
     }
 
     // Update text fields
-    livesText.innerText = `Lives: ${s.lives}`;
-    scoreText.innerText = `Score: ${s.score}`;
-    highScoreText.innerText = `Best: ${s.highScore}`;
+    livesText.innerText = `${s.lives}`;
+    scoreText.innerText = `${s.score}`;
+    highScoreText.innerText = `${s.highScore}`;
     // the game over / you win / paused text in different states
     if (s.win) {
         show(youWin);
@@ -326,7 +325,7 @@ const render = (): ((s: State) => void) => {
         y: `0`,
         width: `${Constants.PIPE_WIDTH}`,
         height: `${topHeight}`,
-        fill: "green",
+        class: "pipe-body",
       });
 
       // Create bottom pipe rectangle
@@ -335,12 +334,32 @@ const render = (): ((s: State) => void) => {
         y: `${bottomY}`,
         width: `${Constants.PIPE_WIDTH}`,
         height: `${bottomHeight}`,
-        fill: "green",
+        class: "pipe-body",
+      });
+
+      const topCap = createSvgElement(svg.namespaceURI, "rect", {
+        x: `${p.x - 4}`,
+        y: `${Math.max(0, topHeight - 16)}`,
+        width: `${Constants.PIPE_WIDTH + 8}`,
+        height: `${Math.min(16, topHeight)}`,
+        rx: "3",
+        class: "pipe-cap",
+      });
+
+      const bottomCap = createSvgElement(svg.namespaceURI, "rect", {
+        x: `${p.x - 4}`,
+        y: `${bottomY}`,
+        width: `${Constants.PIPE_WIDTH + 8}`,
+        height: "16",
+        rx: "3",
+        class: "pipe-cap",
       });
 
         // Add to pipes to the group
         pipesGroup.appendChild(topRect);
         pipesGroup.appendChild(bottomRect);
+        pipesGroup.appendChild(topCap);
+        pipesGroup.appendChild(bottomCap);
        });
   };
 };

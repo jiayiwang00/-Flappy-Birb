@@ -1,62 +1,112 @@
 <!doctype html>
-<html>
+<html lang="en">
     <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="theme-color" content="#10233f" />
         <title>Flappy Birb</title>
     </head>
     <body>
-        <h1>Flappy Birb</h1>
-        <main id="main" class="flex col">
-            <svg id="svgCanvas" width="600" height="400">
-                <g id="gameOver" visibility="hidden">
-                    <rect
-                        x="225"
-                        y="176"
-                        fill="white"
-                        height="48"
-                        width="150"
-                    ></rect>
-                    <text x="235" y="206">Game Over</text>
-                </g>
-            </svg>
-            <div id="sideBar" class="flex col">
-                <div id="info" class="flex col">
-                    <div class="text">
-                        <span class="left">Lives: </span>
-                        <span class="right" id="livesText">...</span>
+        <header class="hero">
+            <span class="eyebrow">Skyline challenge</span>
+            <h1>Flappy <span>Birb</span></h1>
+            <p>Thread the gaps. Chase your ghost. Beat your best.</p>
+        </header>
+
+        <main id="main">
+            <section class="game-frame" aria-label="Flappy Birb game area">
+                <svg id="svgCanvas" width="600" height="400" role="img" aria-label="Flappy Birb game">
+                    <defs>
+                        <linearGradient id="skyGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#58c7f3" />
+                            <stop offset="65%" stop-color="#9ce6f5" />
+                            <stop offset="100%" stop-color="#e8f8dc" />
+                        </linearGradient>
+                        <linearGradient id="pipeGradient" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#167845" />
+                            <stop offset="45%" stop-color="#4fd36e" />
+                            <stop offset="72%" stop-color="#94ed86" />
+                            <stop offset="100%" stop-color="#1b8b4d" />
+                        </linearGradient>
+                        <linearGradient id="groundGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#8be052" />
+                            <stop offset="25%" stop-color="#58bd45" />
+                            <stop offset="27%" stop-color="#c99b55" />
+                            <stop offset="100%" stop-color="#8b633f" />
+                        </linearGradient>
+                    </defs>
+
+                    <rect class="sky" width="600" height="400" fill="url(#skyGradient)" />
+                    <circle class="sun" cx="510" cy="72" r="36" />
+                    <g class="cloud cloud-one">
+                        <ellipse cx="100" cy="83" rx="45" ry="16" />
+                        <circle cx="78" cy="72" r="19" />
+                        <circle cx="111" cy="65" r="27" />
+                        <circle cx="140" cy="76" r="18" />
+                    </g>
+                    <g class="cloud cloud-two">
+                        <ellipse cx="430" cy="160" rx="39" ry="13" />
+                        <circle cx="410" cy="151" r="16" />
+                        <circle cx="438" cy="143" r="23" />
+                        <circle cx="461" cy="154" r="14" />
+                    </g>
+                    <path class="hills hills-back" d="M0 330 Q80 245 160 330 T320 330 T480 330 T640 330 V400 H0Z" />
+                    <path class="hills hills-front" d="M0 360 Q65 290 130 360 T260 360 T390 360 T520 360 T650 360 V400 H0Z" />
+                    <rect class="ground" y="378" width="600" height="22" fill="url(#groundGradient)" />
+
+                    <g id="gameOver" class="game-message" visibility="hidden">
+                        <rect x="205" y="159" height="82" width="190" rx="18"></rect>
+                        <text x="300" y="192">GAME OVER</text>
+                        <text class="message-subtitle" x="300" y="219">Press R to fly again</text>
+                    </g>
+                </svg>
+                <div class="launch-hint"><span class="pulse-dot"></span> Click the page to launch</div>
+            </section>
+
+            <aside id="sideBar">
+                <section id="info" class="panel stats-panel" aria-label="Game statistics">
+                    <div class="panel-title">Flight status</div>
+                    <div class="stat lives-stat">
+                        <span class="stat-icon">♥</span>
+                        <span class="stat-label">Lives</span>
+                        <strong id="livesText">3</strong>
                     </div>
-                    <div class="text">
-                        <span class="left">Score: </span>
-                        <span class="right" id="scoreText">...</span>
+                    <div class="stat">
+                        <span class="stat-icon">◆</span>
+                        <span class="stat-label">Score</span>
+                        <strong id="scoreText">0</strong>
                     </div>
-                    <div class="text">
-                        <span class="left">Best: </span>
-                        <span class="right" id="highScoreText">...</span>
+                    <div class="stat best-stat">
+                        <span class="stat-icon">★</span>
+                        <span class="stat-label">Best</span>
+                        <strong id="highScoreText">0</strong>
                     </div>
-                    <div id="controls">
-                    <h3>Controls:</h3>
-                    <table>
-                        <td>Jump:</td>
-                        <td>
-                        <div id="Space" class="key" style="width:50px">Space</div>
-                        </td>
-                        </tr>
-                        <tr>
-                        <td>Restart:</td>
-                        <td>
-                        <div id="R" class="key" style="width:50px">R</div>
-                        </td>
-                        </tr>
-                        <tr>
-                        <td>Pause: </td>
-                        <td>
-                        <div id="P" class="key" style="width:50px">P</div>
-                        </td>
-                        </tr>
-                    </table>
-  </div>
+                </section>
+
+                <section id="controls" class="panel controls-panel">
+                    <div class="panel-title">Controls</div>
+                    <div class="control-row">
+                        <span>Flap</span>
+                        <kbd id="Space" class="key key-wide">SPACE</kbd>
+                    </div>
+                    <div class="control-row">
+                        <span>Pause</span>
+                        <kbd id="P" class="key">P</kbd>
+                    </div>
+                    <div class="control-row">
+                        <span>Restart</span>
+                        <kbd id="R" class="key">R</kbd>
+                    </div>
+                </section>
+
+                <div class="ghost-note">
+                    <span class="ghost-mark">◉</span>
+                    Your last flight returns as a ghost on the next run.
                 </div>
-            </div>
+            </aside>
         </main>
+
+        <footer>Built with RxJS · Every flap is part of the replay</footer>
         <script type="module" src="./src/main.ts"></script>
     </body>
 </html>

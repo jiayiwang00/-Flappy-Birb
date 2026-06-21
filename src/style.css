@@ -1,106 +1,345 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap");
+
 :root {
-    background-color: rgb(161, 161, 161);
-    padding: 2em;
-    padding-top: 4em;
+    font-family: "Nunito", system-ui, sans-serif;
+    color: #eaf4ff;
+    background: #081525;
+    font-synthesis: none;
 }
 
-body,
-h2,
-h3,
-h4,
-h5,
-h6,
-th,
-td {
-    font-family: arial, helvetica, sans-serif;
+* {
+    box-sizing: border-box;
 }
 
 body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    padding: 42px 24px 28px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    background:
+        radial-gradient(circle at 15% 12%, rgba(41, 130, 196, 0.25), transparent 30%),
+        radial-gradient(circle at 85% 80%, rgba(63, 197, 151, 0.14), transparent 28%),
+        linear-gradient(145deg, #071321 0%, #10233f 54%, #0b192d 100%);
+}
+
+.hero {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.eyebrow {
+    display: inline-block;
+    padding: 6px 12px;
+    color: #7de3c3;
+    background: rgba(64, 220, 174, 0.1);
+    border: 1px solid rgba(125, 227, 195, 0.25);
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
 }
 
 h1 {
-    font-size: 3em;
-    font-family: arial, helvetica, sans-serif;
-    font-weight: bolder;
-    background-color: rgb(214, 214, 214);
-    border-radius: 0.05em;
-    padding: 0.1em 0.1em 0.1em 0.1em;
-    box-shadow: 0em 0em 0.15em rgb(211, 211, 211);
-    text-shadow: 0em 0em 1px rgb(68, 68, 68);
+    margin: 8px 0 0;
+    color: #fff;
+    font-size: clamp(2.7rem, 6vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.06em;
+    text-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
-.flex {
-    display: flex;
-    row-gap: 1em;
-    column-gap: 1em;
+h1 span {
+    color: #ffd65a;
 }
 
-.col {
-    flex-direction: column;
-}
-
-.row {
-    flex-direction: row;
+.hero p {
+    margin: 10px 0 0;
+    color: #94a9c2;
+    font-size: 0.95rem;
+    font-weight: 700;
 }
 
 main {
-    background-color: rgb(238, 238, 238);
-    border-radius: 0.25em;
-    box-shadow: 0em 0em 0.5em rgb(20, 20, 20);
-    flex-wrap: wrap;
-    padding: 1em;
+    width: min(100%, 920px);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 230px;
+    gap: 18px;
+    align-items: stretch;
+    padding: 16px;
+    background: rgba(11, 28, 49, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 26px;
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.38), inset 0 1px rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(18px);
 }
 
-/* https://stackoverflow.com/questions/6088409/svg-drop-shadow-using-css3 */
-.shadow {
-    -webkit-filter: drop-shadow(0px 0px 0.5px rgba(0, 0, 0, 0.7));
-    filter: drop-shadow(0px 0px 0.5px rgba(0, 0, 0, 0.7));
-}
-
-svg {
-    border-radius: 0.1em;
-    border: 5px solid rgb(77, 77, 77);
-}
-
-svg rect {
-    stroke: black;
-    stroke-width: 2px;
+.game-frame {
+    min-width: 0;
+    padding: 9px;
+    background: #050d18;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.7), 0 15px 32px rgba(0, 0, 0, 0.25);
 }
 
 #svgCanvas {
-    background-color: rgb(154, 154, 154);
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    border-radius: 11px;
+    background: #75d5f0;
+}
+
+.sun {
+    fill: #fff0a6;
+    opacity: 0.85;
+    filter: drop-shadow(0 0 18px rgba(255, 231, 105, 0.7));
+}
+
+.cloud {
+    fill: #fff;
+    opacity: 0.76;
+}
+
+.cloud-two {
+    opacity: 0.48;
+}
+
+.hills-back {
+    fill: #8bd49b;
+    opacity: 0.55;
+}
+
+.hills-front {
+    fill: #52b779;
+    opacity: 0.72;
+}
+
+.ground {
+    stroke: none;
+}
+
+.pipe-body,
+.pipe-cap {
+    fill: url(#pipeGradient);
+    stroke: #0d633a;
+    stroke-width: 3px;
+}
+
+.pipe-cap {
+    filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.25));
+}
+
+.player-bird {
+    filter: drop-shadow(0 5px 4px rgba(0, 0, 0, 0.32));
 }
 
 .ghost-bird {
-    filter: grayscale(1) hue-rotate(160deg) drop-shadow(0 0 3px cyan);
+    filter: grayscale(1) hue-rotate(160deg) drop-shadow(0 0 5px #9ff8ff);
     pointer-events: none;
 }
 
-#info {
-    width: 160px;
-    margin-top: 1em;
+.game-message rect {
+    fill: rgba(8, 21, 37, 0.9);
+    stroke: rgba(255, 255, 255, 0.25);
+    stroke-width: 2px;
 }
 
-#info > .text {
-    font-weight: bold;
+.game-message text,
+#youWin,
+#pausedText {
+    fill: #fff;
+    font-family: "Nunito", system-ui, sans-serif;
+    font-size: 25px;
+    font-weight: 900;
+    text-anchor: middle;
+    letter-spacing: 0.04em;
+    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.4));
 }
 
-.left {
-    font-size: 1.1em;
-    float: left;
+.game-message .message-subtitle {
+    fill: #a7bdd4;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0;
 }
 
-.right {
-    font-size: 1em;
-    float: right;
+.launch-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 28px;
+    color: #8ea4bd;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
 }
 
-#gameOver {
-    font-size: 1.5em;
-    font-weight: bolder;
+.pulse-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #5ce0b4;
+    box-shadow: 0 0 0 5px rgba(92, 224, 180, 0.12);
+}
+
+#sideBar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.panel {
+    padding: 16px;
+    background: linear-gradient(145deg, rgba(31, 59, 88, 0.8), rgba(17, 39, 64, 0.88));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.panel-title {
+    margin-bottom: 11px;
+    color: #839ab5;
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.stat {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    gap: 7px;
+    align-items: center;
+    min-height: 45px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.stat:last-child {
+    border-bottom: 0;
+}
+
+.stat-icon {
+    color: #64dcba;
+    font-size: 1rem;
     text-align: center;
+}
+
+.lives-stat .stat-icon {
+    color: #ff6e81;
+}
+
+.best-stat .stat-icon,
+.best-stat strong {
+    color: #ffd65a;
+}
+
+.stat-label {
+    color: #a9bdd2;
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.stat strong {
+    font-size: 1.28rem;
+    font-weight: 900;
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 42px;
+    color: #a9bdd2;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.key {
+    min-width: 34px;
+    padding: 6px 9px;
+    color: #eaf4ff;
+    background: linear-gradient(#38536e, #243c57);
+    border: 1px solid #55708c;
+    border-bottom: 3px solid #14293f;
+    border-radius: 7px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    font: 800 0.68rem "Nunito", sans-serif;
+    text-align: center;
+}
+
+.key-wide {
+    min-width: 68px;
+}
+
+.ghost-note {
+    margin-top: auto;
+    padding: 13px 14px;
+    color: #89a6c2;
+    background: rgba(74, 201, 217, 0.07);
+    border: 1px solid rgba(116, 224, 236, 0.12);
+    border-radius: 14px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.ghost-mark {
+    margin-right: 4px;
+    color: #9ff8ff;
+}
+
+footer {
+    margin-top: 18px;
+    color: #536b84;
+    font-size: 0.67rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+@media (max-width: 760px) {
+    body {
+        padding: 28px 14px 24px;
+    }
+
+    main {
+        grid-template-columns: 1fr;
+        max-width: 630px;
+    }
+
+    #sideBar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .ghost-note {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 470px) {
+    .hero p,
+    footer {
+        display: none;
+    }
+
+    main {
+        padding: 10px;
+        border-radius: 19px;
+    }
+
+    #sideBar {
+        grid-template-columns: 1fr;
+    }
+
+    .ghost-note {
+        grid-column: auto;
+    }
 }
