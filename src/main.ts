@@ -94,6 +94,7 @@ type State = Readonly<{
     velocity: number, // initial velocity is 0
     lives: number, // lives: 3 initially
     score: number, // initial score
+    highScore: number, // best score in the current browser session
     seed: number, // random seed
 
     timeMs: number;                      // elapsed time in ms
@@ -101,7 +102,9 @@ type State = Readonly<{
     pipes: ReadonlyArray<Pipe>;          // the pipes currently on screen
     nextPipeId: number;                  // next pipe id to use when spawning a new pipe
     totalPipes: number;
-    ghostY: number | null; // current ghost position (null if no ghost)
+    tickIndex: number; // number of simulation ticks elapsed in this run
+    currentRun: ReadonlyArray<number>; // player y position at every tick
+    previousRun: ReadonlyArray<number> | null; // most recent completed run
 }>;
 
 const initialState: State = {
@@ -112,6 +115,7 @@ const initialState: State = {
     velocity: 0, // initial velocity is 0
     lives: 3, // lives: 3 initially
     score: 0, // initial score
+    highScore: 0,
     seed: Constants.SEED, // random seed
 
     timeMs: 0, // elapsed time in ms
@@ -120,7 +124,9 @@ const initialState: State = {
     nextPipeId: 0,// next pipe id to use when spawning a new pipe
     totalPipes: 0,
 
-    ghostY: null, // current ghost position (null if no ghost)
+    tickIndex: 0,
+    currentRun: [Viewport.CANVAS_HEIGHT / 2],
+    previousRun: null,
 };
 
 /**
@@ -191,6 +197,7 @@ const render = (): ((s: State) => void) => {
     // Text fields
     const livesText = document.querySelector("#livesText") as HTMLElement;
     const scoreText = document.querySelector("#scoreText") as HTMLElement;
+    const highScoreText = document.querySelector("#highScoreText") as HTMLElement;
 
     const svg = document.querySelector("#svgCanvas") as SVGSVGElement;
 
@@ -198,6 +205,12 @@ const render = (): ((s: State) => void) => {
         "viewBox",
         `0 0 ${Viewport.CANVAS_WIDTH} ${Viewport.CANVAS_HEIGHT}`,
     );
+
+    // The most recent run is rendered in its own non-interactive layer.
+    const ghostsGroup = createSvgElement(svg.namespaceURI, "g", {
+        "pointer-events": "none",
+    });
+    svg.appendChild(ghostsGroup);
 
     // Add birb image
     const birdImg = createSvgElement(svg.namespaceURI, "image", {
@@ -208,17 +221,6 @@ const render = (): ((s: State) => void) => {
         height: `${Birb.HEIGHT}`,
     });
     svg.appendChild(birdImg);
-
-    // Add ghost image 
-    const ghostImg = createSvgElement(svg.namespaceURI, "image", {
-        href: "assets/birb.png",
-        x: `${Viewport.CANVAS_WIDTH * 0.3 - Birb.WIDTH / 2}`,
-        y: `${Viewport.CANVAS_HEIGHT / 2 - Birb.HEIGHT / 2}`,
-        width: `${Birb.WIDTH}`,
-        height: `${Birb.HEIGHT}`,
-        opacity: "0.35",
-    });
-    svg.appendChild(ghostImg);
 
     // Container group for all pipes
     const pipesGroup = createSvgElement(svg.namespaceURI, "g", {}); // group to hold pipe rects
@@ -257,9 +259,28 @@ const render = (): ((s: State) => void) => {
   return (s: State) => {
     birdImg.setAttribute("y", `${s.position - Birb.HEIGHT / 2}`); // update bird vertical position
 
+    // Rebuild the lightweight ghost layer from observable state. The replay
+    // is visible only while the previous run has a sample for the current
+    // tick; the ghost never participates in collision calculations.
+    while (ghostsGroup.firstChild) ghostsGroup.removeChild(ghostsGroup.firstChild);
+    const ghostY = s.previousRun?.[s.tickIndex];
+    if (ghostY !== undefined) {
+        const ghostImg = createSvgElement(svg.namespaceURI, "image", {
+            href: "assets/birb.png",
+            x: `${Viewport.CANVAS_WIDTH * 0.3 - Birb.WIDTH / 2}`,
+            y: `${ghostY - Birb.HEIGHT / 2}`,
+            width: `${Birb.WIDTH}`,
+            height: `${Birb.HEIGHT}`,
+            opacity: "0.4",
+            class: "ghost-bird",
+        });
+        ghostsGroup.appendChild(ghostImg);
+    }
+
     // Update text fields
     livesText.innerText = `Lives: ${s.lives}`;
     scoreText.innerText = `Score: ${s.score}`;
+    highScoreText.innerText = `Best: ${s.highScore}`;
     // the game over / you win / paused text in different states
     if (s.win) {
         show(youWin);
@@ -450,7 +471,7 @@ export const state$ = (csvContents: string): Observable<State> => {
         // No collision: just update position and velocity
         if (!anyCollision) {
             const boundedY = Math.max(halfH, Math.min(Constants.GROUND - halfH, pos)); // [halfH, GROUND-halfH]
-            return {
+            const nextState: State = {
                 ...s,
                 gameEnd: s.gameEnd || allPassed,
                 win: allPassed,
@@ -461,6 +482,12 @@ export const state$ = (csvContents: string): Observable<State> => {
                 pipes,
                 nextPipeId,
                 score: newScore,
+                highScore: Math.max(s.highScore, newScore),
+            };
+            return {
+                ...nextState,
+                tickIndex: s.tickIndex + 1,
+                currentRun: [...s.currentRun, nextState.position],
             };
         }
   
@@ -483,7 +510,7 @@ export const state$ = (csvContents: string): Observable<State> => {
     const newVel = bounceDown ? bounce : -bounce;
     const newLives = Math.max(0, s.lives - 1); // lives not below zero
 
-    return {
+    const nextState: State = {
       ...s,
       position: boundedY,
       velocity: newVel,
@@ -496,14 +523,18 @@ export const state$ = (csvContents: string): Observable<State> => {
       pipes,
       nextPipeId,
       score: newScore,
+      highScore: Math.max(s.highScore, newScore),
+    };
+    return {
+        ...nextState,
+        tickIndex: s.tickIndex + 1,
+        currentRun: [...s.currentRun, nextState.position],
     };
   }),
 );
 
 // Combine reducer streams: per-tick updates and jump input.
 // const reducers$ = merge(tick$, jump$);
-const restart$ = fromEvent<KeyboardEvent>(document, "keydown").pipe(filter(e => e.code === "KeyR"));
-
 const spawnQueue = parseMapCsv(csvContents);
 const initialFromCsv: State = {
     ...initialState,
@@ -513,18 +544,27 @@ const initialFromCsv: State = {
     spawnQueue,
     pipes: [],
     nextPipeId: 0,
-    ghostY: null,
+    tickIndex: 0,
+    currentRun: [Viewport.CANVAS_HEIGHT / 2],
+    previousRun: null,
     totalPipes: spawnQueue.length - 1,
 };
 
-    // On restart, reset to initial state from CSV
-    return restart$.pipe(
-            startWith(null), // emit once immediately so a run starts without requiring 'R'
-            switchMap(() =>
-                merge(tick$, jump$, pause$).pipe(
-                        scan((s, reduce) => reduce(s), initialFromCsv),),
-            ),
-        );
+    // Restart is part of the reducer stream, so the completed path remains
+    // observable state instead of being hidden in an imperative side store.
+    const restart$ = fromEvent<KeyboardEvent>(document, "keydown").pipe(
+        filter(e => e.code === "KeyR"),
+        map(() => (s: State): State => ({
+            ...initialFromCsv,
+            previousRun: s.currentRun,
+            highScore: Math.max(s.highScore, s.score),
+        })),
+    );
+
+    return merge(tick$, jump$, pause$, restart$).pipe(
+        scan((s, reduce) => reduce(s), initialFromCsv),
+        startWith(initialFromCsv),
+    );
 };
 
 // The following simply runs your main function on window load.  Make sure to leave it in place.

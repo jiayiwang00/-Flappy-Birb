@@ -75,6 +75,11 @@ svg rect {
     background-color: rgb(154, 154, 154);
 }
 
+.ghost-bird {
+    filter: grayscale(1) hue-rotate(160deg) drop-shadow(0 0 3px cyan);
+    pointer-events: none;
+}
+
 #info {
     width: 160px;
     margin-top: 1em;
