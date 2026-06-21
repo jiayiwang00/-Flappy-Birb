@@ -216,7 +216,7 @@ const render = (): ((s: State) => void) => {
 
     // Add birb image
     const birdImg = createSvgElement(svg.namespaceURI, "image", {
-        href: "assets/birb.png",
+        href: `${import.meta.env.BASE_URL}assets/birb.png`,
         x: `${Viewport.CANVAS_WIDTH * 0.3 - Birb.WIDTH / 2}`,
         y: `${Viewport.CANVAS_HEIGHT / 2 - Birb.HEIGHT / 2}`,
         width: `${Birb.WIDTH}`,
@@ -265,7 +265,7 @@ const render = (): ((s: State) => void) => {
     const ghostY = s.previousRun?.[s.tickIndex];
     if (ghostY !== undefined) {
         const ghostImg = createSvgElement(svg.namespaceURI, "image", {
-            href: "assets/birb.png",
+            href: `${import.meta.env.BASE_URL}assets/birb.png`,
             x: `${Viewport.CANVAS_WIDTH * 0.3 - Birb.WIDTH / 2}`,
             y: `${ghostY - Birb.HEIGHT / 2}`,
             width: `${Birb.WIDTH}`,
@@ -589,9 +589,7 @@ const initialFromCsv: State = {
 // The following simply runs your main function on window load.  Make sure to leave it in place.
 // You should not need to change this, beware if you are.
 if (typeof window !== "undefined") {
-    const { protocol, hostname, port } = new URL(import.meta.url);
-    const baseUrl = `${protocol}//${hostname}${port ? `:${port}` : ""}`;
-    const csvUrl = `${baseUrl}/assets/map.csv`;
+    const csvUrl = `${import.meta.env.BASE_URL}assets/map.csv`;
 
     // Get the file from URL
     const csv$ = fromFetch(csvUrl).pipe(
