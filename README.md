@@ -1,5 +1,20 @@
 # Assignment 1
 
+## About Flappy Birb
+
+Flappy Birb is a reactive arcade game where you guide a bird through a timed course of pipes. Passing a pipe increases your score. You begin each run with three lives; hitting a pipe, the ceiling, or the ground costs one life and bounces the bird away from the obstacle. Pass every pipe before losing all three lives to win.
+
+After restarting, a translucent ghost replays the exact path from your most recent run in real time. The ghost is visual only and cannot collide with the player or pipes. The **Best** value records the highest score reached during the current page session and is preserved between restarts (refreshing the page starts a new session).
+
+## How to Play
+
+1. Click anywhere on the page to start the game.
+2. Press **Space** to flap upward.
+3. Press **P** to pause or resume.
+4. Press **R** to start a new run. Your latest run becomes the ghost replay.
+
+Keep the bird inside each pipe gap and try to beat the session high score.
+
 ## Usage
 
 Setup (requires node.js):
