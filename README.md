@@ -1,6 +1,6 @@
-## Flappy Birb
+## Flappy Bird
 
-![image1](bmp/image1.png)Flappy Birb is a reactive arcade game where you guide a bird through a timed course of pipes. Passing a pipe increases your score. You begin each run with three lives; hitting a pipe, the ceiling, or the ground costs one life and bounces the bird away from the obstacle. Pass every pipe before losing all three lives to win.
+![image1](bmp/image1.png)Flappy Bird is a reactive arcade game where you guide a bird through a timed course of pipes. Passing a pipe increases your score. You begin each run with three lives; hitting a pipe, the ceiling, or the ground costs one life and bounces the bird away from the obstacle. Pass every pipe before losing all three lives to win.
 
 After restarting, a translucent ghost replays the exact path from your most recent run in real time. The ghost is visual only and cannot collide with the player or pipes. The **Best** value records the highest score reached during the current page session and is preserved between restarts (refreshing the page starts a new session).
 

@@ -16,7 +16,7 @@ const generatePipeCSV = ({
     posInterval = 2,
     minGapY = 0.2,
     maxGapY = 0.8,
-    // birb height = 0.075
+    // bird height = 0.075
     minGapHeight = 0.2,
     maxGapHeight = 0.3,
 }: {

@@ -36,9 +36,9 @@ const Viewport = {
     CANVAS_HEIGHT: 400, // height of the SVG canvas
 } as const;
 
-const Birb = {
-    WIDTH: 42, // width of the birb image
-    HEIGHT: 30, // height of the birb image
+const Bird = {
+    WIDTH: 42, // width of the bird image
+    HEIGHT: 30, // height of the bird image
 } as const;
 
 const Constants = {
@@ -47,7 +47,7 @@ const Constants = {
     GRAVITY: 1, // acceleration applied to bird velocity each tick
     GROUND: 400, // y-coordinate of the ground
     SEED: 1234, // initial random seed
-    JUMP_SPEED: -8, // upward speed when the birb jumps
+    JUMP_SPEED: -8, // upward speed when the bird jumps
     PIPE_SPEED_PX_PER_SEC: 100, // horizontal speed (leftwards) of pipes in px/s
 } as const;
 
@@ -214,13 +214,13 @@ const render = (): ((s: State) => void) => {
     });
     svg.appendChild(ghostsGroup);
 
-    // Add birb image
+    // Add bird image
     const birdImg = createSvgElement(svg.namespaceURI, "image", {
-        href: `${import.meta.env.BASE_URL}assets/birb.png`,
-        x: `${Viewport.CANVAS_WIDTH * 0.3 - Birb.WIDTH / 2}`,
-        y: `${Viewport.CANVAS_HEIGHT / 2 - Birb.HEIGHT / 2}`,
-        width: `${Birb.WIDTH}`,
-        height: `${Birb.HEIGHT}`,
+        href: `${import.meta.env.BASE_URL}assets/bird.png`,
+        x: `${Viewport.CANVAS_WIDTH * 0.3 - Bird.WIDTH / 2}`,
+        y: `${Viewport.CANVAS_HEIGHT / 2 - Bird.HEIGHT / 2}`,
+        width: `${Bird.WIDTH}`,
+        height: `${Bird.HEIGHT}`,
         class: "player-bird",
     });
     svg.appendChild(birdImg);
@@ -256,7 +256,7 @@ const render = (): ((s: State) => void) => {
    * Updates attributes (bird position, HUD, pipes) based on current state.
    */
   return (s: State) => {
-    birdImg.setAttribute("y", `${s.position - Birb.HEIGHT / 2}`); // update bird vertical position
+    birdImg.setAttribute("y", `${s.position - Bird.HEIGHT / 2}`); // update bird vertical position
 
     // Rebuild the lightweight ghost layer from observable state. The replay
     // is visible only while the previous run has a sample for the current
@@ -265,11 +265,11 @@ const render = (): ((s: State) => void) => {
     const ghostY = s.previousRun?.[s.tickIndex];
     if (ghostY !== undefined) {
         const ghostImg = createSvgElement(svg.namespaceURI, "image", {
-            href: `${import.meta.env.BASE_URL}assets/birb.png`,
-            x: `${Viewport.CANVAS_WIDTH * 0.3 - Birb.WIDTH / 2}`,
-            y: `${ghostY - Birb.HEIGHT / 2}`,
-            width: `${Birb.WIDTH}`,
-            height: `${Birb.HEIGHT}`,
+            href: `${import.meta.env.BASE_URL}assets/bird.png`,
+            x: `${Viewport.CANVAS_WIDTH * 0.3 - Bird.WIDTH / 2}`,
+            y: `${ghostY - Bird.HEIGHT / 2}`,
+            width: `${Bird.WIDTH}`,
+            height: `${Bird.HEIGHT}`,
             opacity: "0.4",
             class: "ghost-bird",
         });
@@ -450,15 +450,15 @@ export const state$ = (csvContents: string): Observable<State> => {
         const allPassed = newScore >= s.totalPipes;
 
         // The bird bounces collision with the top/bottom surface (I used chatgpt to help debug this function)
-        const halfH = Birb.HEIGHT / 2; // half height of birb
-        const halfW = Birb.WIDTH / 2; // half width of birb
+        const halfH = Bird.HEIGHT / 2; // half height of bird
+        const halfW = Bird.WIDTH / 2; // half width of bird
         const vy = s.velocity + Constants.GRAVITY; // apply gravity to velocity
         const pos = s.position + vy; // new position
 
-        const hitTop = (pos - halfH) <= 0;                  // top of birb hits top of screen
-        const hitBottom = (pos + halfH) >= Constants.GROUND;// bottom of birb hits ground
-        const birdLeft = birdCenterX - halfW;               // left edge of birb
-        const birdRight = birdCenterX + halfW;              // right edge of birb
+        const hitTop = (pos - halfH) <= 0;                  // top of bird hits top of screen
+        const hitBottom = (pos + halfH) >= Constants.GROUND;// bottom of bird hits ground
+        const birdLeft = birdCenterX - halfW;               // left edge of bird
+        const birdRight = birdCenterX + halfW;              // right edge of bird
 
         // Check for collision with pipes  (I used chatgpt to help debug this function)
         type PipeHit = { kind: "upper" | "lower"; gapTop: number; gapBottom: number } | null;
